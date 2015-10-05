@@ -2,48 +2,64 @@
 var cipobolt = angular.module("cipobolt", []);
 
 // Termékek.
-cipobolt.controller("termekCtrl", function ($scope) {
+cipobolt.controller("termekCtrl", ["$http", "$scope", function ($http, $scope) {
 
     // Termékek listája.
-    $scope.termekek = [
-        {
-            "name": "Piros cipő",
-            "price": "11000",
-            "img": "http://keptaram.hu/kt/7/3451/rAPGoCGpduvPbCxVKPvn/piros-szaten-cipo.jpg"
-        },
-        {
-            "name": "Zöld cipő",
-            "price": "11000",
-            "img": "http://keptaram.hu/kt/7/3451/rAPGoCGpduvPbCxVKPvn/piros-szaten-cipo.jpg"
-        },
-        {
-            "name": "Kék cipő",
-            "price": "11000",
-            "img": "http://keptaram.hu/kt/7/3451/rAPGoCGpduvPbCxVKPvn/piros-szaten-cipo.jpg"
-        },
-        {
-            "name": "Fekete cipő",
-            "price": "11000",
-            "img": "http://keptaram.hu/kt/7/3451/rAPGoCGpduvPbCxVKPvn/piros-szaten-cipo.jpg"
-        }
-    ];
+    $scope.termekek = [];
+
+    // Termékek lekérése.
+    $http.get("js/json/termekek.json")
+        .success(function (d) {
+            $scope.termekek = d;
+        })
+        .error(function (d) {
+            console.error("Error: ", d);
+        });
+
+
+}]);
+
+// Navbar kontrollere.
+cipobolt.controller("navbar", function ($scope) {
+
+    $scope.changeTheme = function ($event) {
+
+        // Esemény megállítása.
+        $event.preventDefault();
+        var _target = $event.target;
+
+        // A kiválasztott link url-je.
+        var theme = _target.href.replace(location.origin, "").replace(/\//g, "");
+
+        // Fő css link keresése és cseréje.
+        // lib/bootswatch/cerulean/bootstrap.css
+        var mainCss = $("#main-css");
+        var href = mainCss.attr("href");
+        href = href.replace(/bootswatch\/.*\/bootstrap/, "bootswatch/" + theme + "/bootstrap");
+        mainCss.attr("href", href);
+
+    }
 
 });
 
 // Téma módosítása.
-$("#theme-selector a").click(function (e) {
+function changeTheme() {
 
-    // Esemény megállítása.
-    e.preventDefault();
+    $("#theme-selector a").click(function (e) {
 
-    // A kiválasztott link url-je.
-    var theme = this.href.replace(location.origin, "").replace(/\//g, "");
+        // Esemény megállítása.
+        e.preventDefault();
 
-    // Fő css link keresése és cseréje.
-    // lib/bootswatch/cerulean/bootstrap.css
-    var mainCss = $("#main-css");
-    var href = mainCss.attr("href");
-    href = href.replace(/bootswatch\/.*\/bootstrap/, "bootswatch/" + theme + "/bootstrap");
-    mainCss.attr("href", href);
+        // A kiválasztott link url-je.
+        var theme = this.href.replace(location.origin, "").replace(/\//g, "");
 
-});
+        // Fő css link keresése és cseréje.
+        // lib/bootswatch/cerulean/bootstrap.css
+        var mainCss = $("#main-css");
+        var href = mainCss.attr("href");
+        href = href.replace(/bootswatch\/.*\/bootstrap/, "bootswatch/" + theme + "/bootstrap");
+        mainCss.attr("href", href);
+
+    });
+
+}
